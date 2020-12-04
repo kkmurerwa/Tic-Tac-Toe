@@ -10,7 +10,7 @@ const CellFactory = (id) => {
 
 let gameExists = false
 let gameWon = false
-let gameWinner = ""
+let gameWinner = 0
 
 // Array to store gameboard
 let gameboard = [...Array(9).keys()].map(elem => "q")
@@ -122,7 +122,7 @@ function createGameboardGrid(container) {
 function resetGame(gridContainer, restart){
     // Reset gameboard, game grid, and gameWon
     gameWon = false
-    gameWinner = ""
+    gameWinner = 0
     console.log(gameboard)
     container.removeChild(gridContainer)
     container.removeChild(restart)
@@ -135,9 +135,14 @@ function computerMove(gridContainer){
     for (let i = 0; i < 10; i ++){
         if(gameboard[i] === "q") unselected.push(i)
     }
-
     // Generate random number
-    let randomNumber = Math.floor(Math.random() * unselected.length)
+    let randomNumber = null
+    if (gameboard[4] === "q"){
+        console.log("4 is empty")
+        randomNumber = 3
+    } else{
+        randomNumber = Math.floor(Math.random() * unselected.length)
+    }
 
     let cellSelection = unselected[randomNumber]
 
@@ -148,86 +153,39 @@ function computerMove(gridContainer){
 
 function checkForWinner(){
     let gameboardString = gameboard.join("")
-    let regexPlayer = new RegExp(/X...X...X|X..X..X|XXX......|...XXX...|......XXX|..X.X.X/ig)
-    let regexComp = new RegExp(/O...O...O|O..O..O|OOO......|...OOO...|......OOO|..O.O.O/ig)
+    let regexPlayer = new RegExp(/X...X...X|X..X..X|XXX......|...XXX...|......XXX|..X.X.X../ig)
+    let regexComp = new RegExp(/O...O...O|O..O..O|OOO......|...OOO...|......OOO|..O.O.O../ig)
 
     if (regexComp.test(gameboardString)){
         gameWon = true
-        gameWinner = "Computer"
+        gameWinner = 2
     } else if (regexPlayer.test(gameboardString)){
         gameWon = true
-        gameWinner = "Player"
+        gameWinner = 1
     }
 
-    if (gameWon) displayWinner()
+    let turn = gameboard.filter(elem => elem != "q").length
+    if (turn === 9 && !gameWon){
+        console.log("Draw")
+        createForm(0)
+    }
+
+    if (gameWon) createForm(gameWinner)
 }
 
-function displayWinner(){
-    // alert(`${gameWinner} won the game!!!`
-    console.log(`${gameWinner} won the game!!!`)
-
-
-    if (gameWinner === "Player") createWinnerForm()
-    else createLoserForm()
-}
-
-
-function createWinnerForm(){
-    // Create and initialize form
+function createForm(decider){
+    // Create and initialize overlay div
     const pyroDiv = document.createElement("div")
     pyroDiv.classList.add("pyro")
 
-    const beforeDiv = document.createElement("div")
-    beforeDiv.classList.add("before")
-
-    const afterDiv = document.createElement("div")
-    afterDiv.classList.add("after")
-
+    // Create dialog
     const contentDiv = document.createElement("div")
     contentDiv.classList.add("congrats")
 
+    // Create paragraph to display text
     const paragraph = document.createElement("p")
-    paragraph.innerHTML = `You won the game!!!`
 
-    // Create restart button
-    const removeCongratsGrid = document.createElement("button")
-    removeCongratsGrid.className = "button-close-pyro"
-    removeCongratsGrid.innerHTML = "Close"
-    removeCongratsGrid.addEventListener("click", function(){
-        // Reset gameboard, game grid, and gameWon
-        document.body.removeChild(pyroDiv)
-    })
-
-    
-
-    
-    pyroDiv.appendChild(beforeDiv)
-    pyroDiv.appendChild(afterDiv)
-
-    contentDiv.appendChild(paragraph)
-    contentDiv.appendChild(removeCongratsGrid)
-
-    pyroDiv.appendChild(contentDiv)
-
-    // Create form title
-    const formTitle = document.createElement("h3")
-    formTitle.innerHTML = "Add new book"
-
-    document.body.appendChild(pyroDiv)
-}
-
-function createLoserForm(){
-    // Create and initialize form
-    const pyroDiv = document.createElement("div")
-    pyroDiv.classList.add("pyro")
-
-    const contentDiv = document.createElement("div")
-    contentDiv.classList.add("congrats")
-
-    const paragraph = document.createElement("p")
-    paragraph.innerHTML = `${gameWinner} won the game.`
-
-    // Create restart button
+    // Create close button
     const removeCongratsGrid = document.createElement("button")
     removeCongratsGrid.className = "button-close-pyro"
     removeCongratsGrid.innerHTML = "Close"
@@ -236,15 +194,35 @@ function createLoserForm(){
         document.body.removeChild(pyroDiv)
     })
 
+    if (decider === 0){
+        paragraph.innerHTML = `Game ended in a draw.`
+    } else if (decider === 1){
+        paragraph.innerHTML = `Congrats! You won the game.`
+
+        // Create confetti
+        const beforeDiv = document.createElement("div")
+        beforeDiv.classList.add("before")
+
+        const afterDiv = document.createElement("div")
+        afterDiv.classList.add("after")
+
+        // Append confetti to overlay
+        pyroDiv.appendChild(beforeDiv)
+        pyroDiv.appendChild(afterDiv)
+
+    } else {
+        paragraph.innerHTML = `You lost! Computer won the game.`
+    }
+
+
+    // Append items to container
     contentDiv.appendChild(paragraph)
     contentDiv.appendChild(removeCongratsGrid)
 
+    // Append content div to pyro div
     pyroDiv.appendChild(contentDiv)
 
-    // Create form title
-    const formTitle = document.createElement("h3")
-    formTitle.innerHTML = "Add new book"
-
+    // Append pyro div to body
     document.body.appendChild(pyroDiv)
 }
 
