@@ -110,19 +110,24 @@ p {
 
 @media screen and (max-width: 1000px) {
   .title {
-      font-size: 40px;
+    font-size: 40px;
+  }
+
+  .button {
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
 
   .pyro {
     padding: 0%;
   }
   .grid-container {
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
   }
 
   .grid-item {
-    font-size: 50px;
+    font-size: 65px;
   }
 }
 
