@@ -103,6 +103,12 @@ p {
     outline: none;
 }
 
+embed {
+  width: 0%;
+  height: 0%;
+  z-index: -20;
+}
+
 .button-close-pyro:hover {
     background-color: rgba(113, 226, 90, 0.514);
     cursor: pointer;

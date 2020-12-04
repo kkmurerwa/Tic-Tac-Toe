@@ -85,7 +85,6 @@ function createGameboardGrid(container) {
                 // Play Computer Move
                 if (turn < 8 && !gameWon){
                     computerMove(gridContainer)
-                    checkForWinner()
                 }
                 
             } else {
@@ -135,19 +134,24 @@ function computerMove(gridContainer){
     for (let i = 0; i < 10; i ++){
         if(gameboard[i] === "q") unselected.push(i)
     }
-    // Generate random number
-    let randomNumber = null
-    if (gameboard[4] === "q"){
-        console.log("4 is empty")
-        randomNumber = 3
-    } else{
-        randomNumber = Math.floor(Math.random() * unselected.length)
-    }
+    
+    // Create cell selection
+    let cellSelection = null
 
-    let cellSelection = unselected[randomNumber]
+    console.log(`Gameboard ${gameboard}`)
+    if (gameboard[4] == "q"){
+        cellSelection = 4
+    } else{
+        let randomNumber = Math.floor(Math.random() * unselected.length)
+        cellSelection = unselected[randomNumber]
+    }
 
     gameboard[cellSelection] = "O"
     cellObject[cellSelection].id.innerHTML = gameboard[cellSelection]
+
+
+    // Check for winner
+    checkForWinner()
 }
 
 
@@ -184,6 +188,7 @@ function createForm(decider){
 
     // Create paragraph to display text
     const paragraph = document.createElement("p")
+    const paragraphAudio = document.createElement("p")
 
     // Create close button
     const removeCongratsGrid = document.createElement("button")
@@ -195,9 +200,9 @@ function createForm(decider){
     })
 
     if (decider === 0){
-        paragraph.innerHTML = `Game ended in a draw.`
+        paragraph.innerHTML = `Game ended in a draw <br> <i class="fa fa-handshake-o" aria-hidden="true"></i>`
     } else if (decider === 1){
-        paragraph.innerHTML = `Congrats! You won the game.`
+        paragraph.innerHTML = `Congrats! You won the game <br> <i class="fa fa-trophy" aria-hidden="true"></i>`
 
         // Create confetti
         const beforeDiv = document.createElement("div")
@@ -206,21 +211,27 @@ function createForm(decider){
         const afterDiv = document.createElement("div")
         afterDiv.classList.add("after")
 
+        // Create background audio
+        
+        paragraphAudio.innerHTML = `<embed src="res/congrats.mp3" autostart=true loop=false>`
+
         // Append confetti to overlay
         pyroDiv.appendChild(beforeDiv)
         pyroDiv.appendChild(afterDiv)
 
     } else {
-        paragraph.innerHTML = `You lost! Computer won the game.`
+        paragraph.innerHTML = `Sorry. You lost the game <br> <i class="fa fa-thumbs-down" aria-hidden="true"></i>`
     }
 
 
     // Append items to container
     contentDiv.appendChild(paragraph)
     contentDiv.appendChild(removeCongratsGrid)
+    
 
     // Append content div to pyro div
     pyroDiv.appendChild(contentDiv)
+    pyroDiv.appendChild(paragraphAudio)
 
     // Append pyro div to body
     document.body.appendChild(pyroDiv)
